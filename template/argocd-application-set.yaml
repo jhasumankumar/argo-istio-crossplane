@@ -9,7 +9,6 @@ spec:
         elements:
           - cluster: minikube-local
             server: https://kubernetes.default.svc
-
   template:
     metadata:
       name: "httpbin-rate-limit-{{cluster}}"

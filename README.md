@@ -17,6 +17,33 @@
 - kubectl port-forward svc/argocd-server -n argocd 8080:443
 - kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 - http://localhost:8080 user is admin and password can be retrieve from above command
+```
+# Login via REST — same endpoint the UI uses
+PASSWORD=$(kubectl -n argocd get secret argocd-initial-admin-secret \
+-o jsonpath="{.data.password}" | base64 -d && echo)
+
+TOKEN=$(curl -sk https://localhost:8080/api/v1/session \
+-H "Content-Type: application/json" \
+-d "{\"username\":\"admin\",\"password\":\"$PASSWORD\"}" \
+| python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+
+echo $TOKEN   # should print a JWT
+
+export ARGOCD_SERVER=localhost:8080
+export ARGOCD_AUTH_TOKEN=$TOKEN
+export ARGOCD_OPTS="--insecure --grpc-web --http-retry-max 3"
+
+# Test it
+argocd app list
+argocd cluster list
+
+kubectl apply -f template/argocd-application-set.yaml 
+
+kubectl get applicationset -n argocd
+kubectl get applications   -n argocd -w
+
+```
+
 
 ### Install crossplane
 - helm repo add crossplane-stable https://charts.crossplane.io/stable
