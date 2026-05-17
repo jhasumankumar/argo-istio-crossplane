@@ -1,6 +1,7 @@
 # Local Rate Limiting for httpbin
 
 > Kubernetes manifests: [template/httpbin-local-rate-limit.yaml](template/httpbin-local-rate-limit.yaml)
+https://httpbin.suman.com:8081/status/418
 
 ## Overview
 
@@ -15,7 +16,7 @@ Local rate limiting is applied to the **httpbin** service deployed in the `httpb
  ┌──────────────────────────────────────────────────────────────┐
  │                                                              │
  │   Client ──► Istio Ingress Gateway Pod                       │
- │              (Gateway: ingress-gateway, port 8080)           │
+ │              (Gateway: ingress-gateway, port 8081)           │
  │              (HTTPRoute: host=httpbin.suman.com → httpbin:80)│
  │                                                              │
  └──────────────────────────┬───────────────────────────────────┘

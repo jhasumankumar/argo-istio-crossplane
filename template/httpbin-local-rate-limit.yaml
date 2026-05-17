@@ -3,6 +3,7 @@
 # minikube tunnel
 # kubectl get svc -n istio-system
 # echo "127.0.0.1  httpbin.suman.com" | sudo tee -a /etc/hosts
+# Test using https://httpbin.suman.com:8081/status/418
 ---
 apiVersion: v1
 kind: Namespace
