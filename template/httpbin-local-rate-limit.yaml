@@ -1,7 +1,6 @@
-# Self-contained Minikube deployment for httpbin
 # Rate limiting docs: ../local-rate-limit.md
-# kubectl port-forward svc/httpbin 8080:8080 -n httpbin
-#  minikube tunnel
+# Using K8 gateway instead of istio VirtualService
+# minikube tunnel
 # kubectl get svc -n istio-system
 # echo "127.0.0.1  httpbin.suman.com" | sudo tee -a /etc/hosts
 ---
@@ -109,6 +108,7 @@ spec:
         - name: httpbin
           port: 80
 ---
+# To view proxy log
 apiVersion: telemetry.istio.io/v1
 kind: Telemetry
 metadata:
@@ -119,6 +119,7 @@ spec:
     - providers:
         - name: envoy
 ---
+# Envoy filter to add local rate limit
 apiVersion: networking.istio.io/v1alpha3
 kind: EnvoyFilter
 metadata:
