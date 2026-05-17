@@ -69,7 +69,7 @@ Local rate limiting is applied to the **httpbin** service deployed in the `httpb
 - The token bucket lives **inside each pod's sidecar** — not in the gateway, not in a shared service.
 - The gateway simply routes by hostname/path; it has no knowledge of rate limits.
 - A pod with an empty bucket rejects the request **before it ever reaches the httpbin container**.
-- After a rejection, the bucket refills 1 token after 60 seconds, allowing the next request through.
+- After a rejection, the bucket refills 1 token (configured) after 60 seconds (configured), allowing the next request through.
 
 ---
 
@@ -79,12 +79,13 @@ The rate limiter uses the **token bucket** algorithm, configured as follows in t
 
 ```yaml
 token_bucket:
-  max_tokens: 1
+  max_tokens: 1 # set according to app
   tokens_per_fill: 1
   fill_interval: 60s
 ```
 
 ### How it works
+#### Applies to this example: configure max_token and tokens_per_fill based on apps historical data
 
 - The bucket holds a maximum of **1 token** at any time.
 - **1 token is added** every **60 seconds**.
@@ -166,7 +167,7 @@ total requests per interval = replicas × tokens_per_fill
 | 5 | 5 |
 | 10 | 10 |
 
-This is a side-effect of local rate limiting, not a feature. If you need the **total** to stay at 1 req/60s regardless of replica count, a linked (global) rate limit backed by a shared counter is required instead.
+This is a side-effect of local rate limiting, not a feature. If you need the **total** to stay at 1 req/60s regardless of replica count.
 
 ---
 
@@ -190,8 +191,3 @@ Both approaches serve the same fundamental purpose — **protecting services fro
 - Approximate limiting is acceptable (a client hitting 3 replicas effectively gets 3x the per-pod limit).
 - You need **fast enforcement** with no network round-trips.
 
-### When to choose linked (global) rate limiting
-
-- You need **exact, cluster-wide quotas** (e.g., 100 req/min total, not 100 per pod).
-- You are rate limiting based on dynamic keys like user ID, API key, or IP address.
-- You have an existing rate limit service (e.g., `envoyproxy/ratelimit`) already deployed.
